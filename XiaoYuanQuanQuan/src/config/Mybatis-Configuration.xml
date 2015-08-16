@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC
+    "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- <settings>
+		<setting name="callSettersOnNulls" value="true"></setting>
+	</settings> -->
+	<typeAliases>
+		<typeAlias alias="Comment" type="com.info.model.CommentModel"/>
+		<typeAlias alias="ActComment" type="com.info.model.ActivityCommentModel"/>
+		<typeAlias alias="User" type="com.info.model.UserModel"/>
+		<typeAlias alias="Post" type="com.info.json.JsonPostItem"/>
+		<typeAlias alias="Activity" type="com.info.json.JsonActItem"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="com/info/basic/DataModelMapper.xml"/>
+	</mappers>
+</configuration>
