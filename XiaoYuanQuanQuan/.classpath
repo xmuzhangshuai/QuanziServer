@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.web"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SpringJar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/MyBatisJar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Json">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/FileUpload"/>
+	<classpathentry kind="lib" path="D:/jar/FileUpload/smartupload.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/commons-logging.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/ezmorph-1.0.3.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/fastjson-1.1.39.jar"/>
+	<classpathentry kind="lib" path="D:/jar/Json/json-lib-2.4-jdk15.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/asm-3.3.1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/cglib-2.2.2.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/javassist-3.17.1-GA.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/log4j-api-2.0-rc1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/log4j-core-2.0-rc1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/mybatis-3.2.7.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="lib" path="D:/jar/MybatisJar/slf4j-log4j12-1.7.5.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/mybatis-spring-1.2.1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/mysql-connector-java-5.1.22-bin.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-aop-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-aspects-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-beans-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-context-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-context-support-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-core-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-expression-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-instrument-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-jdbc-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-jms-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-messaging-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-orm-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-oxm-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-test-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-tx-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-web-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-webmvc-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-webmvc-portlet-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/SpringJar/spring-websocket-4.0.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/jar/FileUpload/commons-fileupload-1.3.1.jar"/>
+	<classpathentry kind="lib" path="D:/jar/FileUpload/commons-io-2.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_51"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

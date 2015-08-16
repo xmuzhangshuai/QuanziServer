@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd 
+	http://www.springframework.org/schema/aop  
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+	<!-- 连接数据库 -->
+	<bean id="jdbcDatasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.gjt.mm.mysql.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/quanzi?useUnicode=true&amp;characterEncoding=UTF-8"/>
+		<property name="username" value="root"/>
+		<property name="password" value="e23456"/>
+	</bean>
+	<!-- 引用数据资源 和 mybatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="jdbcDatasource" />
+		<property name="configLocation" value="classpath:config/Mybatis-Configuration.xml" />
+	</bean>
+	<!-- 配置mapper，接口，增删改查语句，DataModelMapper里面是增删改查的语句 -->
+	<bean id="DataModelMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+    	<property name="mapperInterface"  
+        	value="com.info.basic.DataModelMapper" />  
+    	<property name="sqlSessionFactory" ref="sqlSessionFactory" />  
+	</bean> 
+
+</beans>
