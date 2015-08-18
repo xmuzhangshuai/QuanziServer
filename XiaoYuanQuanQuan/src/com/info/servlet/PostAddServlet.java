@@ -89,8 +89,8 @@ public class PostAddServlet extends HttpServlet{
 			su.upload();
 			int ss = su.getFiles().getCount();
 			
-			n_content = Function.mysql_validate_string(new String(su.getRequest().getParameter(PostTable.P_CONTENT))).trim();
-			if(!n_content.equals("")){
+			n_content =new String(su.getRequest().getParameter(PostTable.P_CONTENT)).trim();
+			//if(!n_content.equals("")){
 				userid = Integer.parseInt(su.getRequest().getParameter(PostTable.P_USERID));
 				
 				Files files = su.getFiles();
@@ -114,10 +114,10 @@ public class PostAddServlet extends HttpServlet{
 				big_img_path_list = big_img_path_list.substring(0,big_img_path_list.length()-1);
 				small_img_path_list = small_img_path_list.substring(0,small_img_path_list.length()-1);
 				result = pImpl.addPost(big_img_path_list,small_img_path_list,userid,n_content);		 	
-			}
-			else{
-				result.put(Info.DATA, -2);//内容为空
-			}
+			//}
+//			else{
+//				result.put(Info.DATA, -2);//内容为空
+//			}
 						
 	}catch(SmartUploadException e){
 		e.printStackTrace();
