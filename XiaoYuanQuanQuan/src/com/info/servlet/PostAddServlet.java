@@ -89,7 +89,8 @@ public class PostAddServlet extends HttpServlet{
 			su.upload();
 			int ss = su.getFiles().getCount();
 			
-			n_content =new String(su.getRequest().getParameter(PostTable.P_CONTENT)).trim();
+			n_content =Function.mysql_validate_string(su.getRequest().getParameter(PostTable.P_CONTENT)).trim();
+			//System.out.println("输入的内容为："+n_content);
 			//if(!n_content.equals("")){
 				userid = Integer.parseInt(su.getRequest().getParameter(PostTable.P_USERID));
 				
@@ -122,6 +123,7 @@ public class PostAddServlet extends HttpServlet{
 	}catch(SmartUploadException e){
 		e.printStackTrace();
 	}	
+		//System.out.println(result.get(Info.DATA));
 	 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
 	}
 
