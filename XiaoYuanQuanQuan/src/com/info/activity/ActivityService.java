@@ -31,4 +31,5 @@ public interface ActivityService {
     
     public HashMap<String,Object> comment(ActivityCommentModel comment);
     public HashMap<String,Object> getActComments(int a_actid, int a_userid, int pageNow);
+    public HashMap<String,Object> deleteComment(int commentID);
 }

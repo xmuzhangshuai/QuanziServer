@@ -23,6 +23,8 @@ public interface QuanziService {
 	public int getLikePostsAmount(int userid);
 	public int getLikeActAmount(int userid);
 	public int getLikePAAmount(int userid); 
+	//获得某个学校里面某个行业的所有用户
+	public HashMap<String,Object> getSchoolIndustryUsers(int userid, String industry_item, int school_id);
 	
 	public HashMap<String,Object> getMyNewFollowers(int userid);//获取我的新追随者用户列表
 	public HashMap<String,Object> getQuanziUserListByIndustry(int userid, String industry_item);
@@ -34,4 +36,6 @@ public interface QuanziService {
 	public HashMap<String,Object> getIndustryList();
 	public HashMap<String,Object> getSkillList();
 	public HashMap<String,Object> getInterestList();
+	//根据电话号码找人
+	public HashMap<String,Object> findUserByTel(int userid, String tel);
 }

@@ -15,15 +15,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.info.basic.DataModelMapper;
-import com.info.model.CommentModel;
-import com.info.post.PostServiceImpl;
+import com.info.quanzi.QuanziServiceImpl;
 import com.info.sys.FastJsonTool;
-import com.info.sys.Function;
 import com.info.sys.Info;
-import com.info.table.CommentTable;;
+import com.info.table.UserTable;
 
-@WebServlet(name="postDeleteCommentServlet",urlPatterns="/post/deleteComment")
-public class PostDeleteCommentServlet extends HttpServlet{
+@WebServlet(name="quanziIndustryUserServlet",urlPatterns="/quanzi/getIndustryUsers")
+public class QuanziGetSameIndustryUsersServlet extends HttpServlet{
 	/**
 	 * 
 	 */
@@ -45,14 +43,18 @@ public class PostDeleteCommentServlet extends HttpServlet{
 		ct = new ClassPathXmlApplicationContext(configFiles);
 		DataModelMapper dtMapper = (DataModelMapper) ct.getBean("DataModelMapper");
 		
-		PostServiceImpl pImpl = new PostServiceImpl(dtMapper);
+		QuanziServiceImpl qImpl = new QuanziServiceImpl(dtMapper);
 		
-		int commentID = Integer.parseInt(request.getParameter(CommentTable.C_ID));
+		int c_userid = Integer.parseInt(request.getParameter(UserTable.U_ID));
+		int school_id = Integer.parseInt(request.getParameter(UserTable.U_SCHOOLID));
+		String industry_item = request.getParameter(UserTable.U_INDUSTRY_ITEM);
+		//int c_beconcerned_userid = Integer.parseInt(request.getParameter(QuanziTable.C_BECONCERNED_USERID));
 		
-		HashMap<String,Object> result = pImpl.deleteComment(commentID);
+		HashMap<String,Object> result = qImpl.getSchoolIndustryUsers(c_userid, industry_item, school_id);
 		
-		out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
+	 	//String	retData = JSONObject.fromObject(result).toString();
 	 	
-	 	//out.print(FastJsonTool.createJsonString(result));
+	 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
 	}
 }
+

@@ -623,4 +623,74 @@ public class QuanziServiceImpl extends Service implements QuanziService {
 		}
 		return result;
 	}
+
+	@Override
+	public HashMap<String, Object> getSchoolIndustryUsers(int userid, String industry_item,
+			int school_id) {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+				HashMap<String,Object> select = new HashMap<String,Object>();
+				HashMap<String,Object> result = new HashMap<String,Object>();
+				HashMap<String,Object> concernSearch = new HashMap<String,Object>();
+								
+				select.put("tables", "u_user");
+				select.put("fields", "u_id,u_nickname,u_gender,u_small_avatar");
+				select.put("where", "u_schoolid="+school_id+" and u_industry_item='"+industry_item+"'");
+						
+				concernSearch.put("tables", "c_concern");
+				concernSearch.put("fields", "c_id");
+						
+				DataModelMapper dtMapper = this.getDtMapper();
+						
+				try{
+					List<JsonConcern> users = dtMapper.selectConcernList(select); 
+					//同时检查是否关注追随者
+					for(JsonConcern concern:users){
+						concernSearch.put("where", "c_userid=" + userid + " and c_beconcerned_userid=" + concern.getUser_id());
+						if(dtMapper.selectModels(concernSearch).size()==1)//关注过
+							concern.setIs_concern(true);
+						else
+							concern.setIs_concern(false);
+					}
+					result.put(Info.DATA, users);
+				}catch(Exception e){
+					e.printStackTrace();
+					result.put(Info.DATA, -1);
+				}
+				return result;
+	}
+
+	@Override
+	public HashMap<String, Object> findUserByTel(int userid,String tel) {
+		// TODO Auto-generated method stub
+		HashMap<String,Object> select = new HashMap<String,Object>();
+		HashMap<String,Object> result = new HashMap<String,Object>();
+		HashMap<String,Object> concernSearch = new HashMap<String,Object>();
+						
+		select.put("tables", "u_user");
+		select.put("fields", "u_id,u_nickname,u_gender,u_small_avatar");
+		select.put("where", "u_tel='"+tel+"'");
+				
+		concernSearch.put("tables", "c_concern");
+		concernSearch.put("fields", "c_id");
+				
+		DataModelMapper dtMapper = this.getDtMapper();
+				
+		try{
+			List<JsonConcern> users = dtMapper.selectConcernList(select); 
+			//同时检查是否关注追随者
+			for(JsonConcern concern:users){
+				concernSearch.put("where", "c_userid=" + userid + " and c_beconcerned_userid=" + concern.getUser_id());
+				if(dtMapper.selectModels(concernSearch).size()==1)//关注过
+					concern.setIs_concern(true);
+				else
+					concern.setIs_concern(false);
+			}
+			result.put(Info.DATA, users);
+		}catch(Exception e){
+			e.printStackTrace();
+			result.put(Info.DATA, -1);
+		}
+		return result;
+	}
 }

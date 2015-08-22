@@ -55,7 +55,7 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		select.put("fields", "a_activity.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 		String where = "u_schoolid=" + school_id +
 				filters +
-				" and a_userid=u_id order by a_addtime desc limit "+ from + "," + Info.NUM_PER_PAGE;
+				" and a_userid=u_id and a_status='NORMAL' order by a_addtime desc limit "+ from + "," + Info.NUM_PER_PAGE;
 		select.put("where", where);
 		
 		likeSearch.put("tables", "af_act_favor");
@@ -175,9 +175,11 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		String where = "a_userid="+a_user_id+"and a_actid="+a_actid;
 		c.put("table", "a_activity");
 		c.put("where", where);
-
+		c.put("expression", "a_status="+"'DELETE'");
+		
+		
 		try{
-			this.getDtMapper().deleteModel(c);
+			this.getDtMapper().updateModels(c);
 			
 			HashMap<String,Object> updateOp = new HashMap<String,Object>();
 			updateOp.put("table", "u_user");
@@ -187,8 +189,10 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 			this.getDtMapper().updateModels(updateOp);
 			
 			result.put(Info.STATUS, Info.SUCCEED);
+			result.put(Info.DATA, 1);
 		}catch(Exception e){
 			result.put(Info.STATUS, Info.FAILED);
+			result.put(Info.DATA, -1);
 		}
 		return result;
 	}
@@ -420,7 +424,7 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		
 		c.put("tables", "a_activity,af_act_favor");
 		c.put("fields", "a_activity.*,af_act_favor.af_time");
-		c.put("where", "af_user_id="+user_id);
+		c.put("where", "af_user_id="+user_id + " and a_status='NORMAL'");
 		try{
 			activities = this.getDtMapper().selectModels(c);
 			result.put(Info.STATUS, Info.SUCCEED);
@@ -610,7 +614,7 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		
 		select.put("tables", "a_activity,u_user");
 		select.put("fields", "a_activity.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
-		String where = "a_userid="+ userid +" and a_userid=u_id order by a_addtime desc";
+		String where = "a_userid="+ userid +" and a_userid=u_id and a_status='NORMAL' order by a_addtime desc";
 		select.put("where", where);
 		
 		likeSearch.put("tables", "af_act_favor");
@@ -665,6 +669,23 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			result.put(Info.STATUS, Info.SERVER_EXCEPTION);
+			result.put(Info.DATA, -1);
+		}
+		return result;
+	}
+	@Override
+	public HashMap<String, Object> deleteComment(int commentID) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> result = new HashMap<String,Object>();
+		HashMap<String, Object> delete = new HashMap<String,Object>();
+		
+		delete.put("table", "ac_act_comment");
+		delete.put("where", "ac_commentid="+commentID);
+		
+		try{
+			this.getDtMapper().deleteModel(delete);
+			result.put(Info.DATA, 1);
+		}catch(Exception e){
 			result.put(Info.DATA, -1);
 		}
 		return result;

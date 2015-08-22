@@ -14,16 +14,15 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.info.activity.ActivityServiceImpl;
 import com.info.basic.DataModelMapper;
-import com.info.model.CommentModel;
-import com.info.post.PostServiceImpl;
 import com.info.sys.FastJsonTool;
-import com.info.sys.Function;
 import com.info.sys.Info;
-import com.info.table.CommentTable;;
+import com.info.table.ActivityTable;
+import com.info.table.CommentTable;
 
-@WebServlet(name="postDeleteCommentServlet",urlPatterns="/post/deleteComment")
-public class PostDeleteCommentServlet extends HttpServlet{
+@WebServlet(name="deleteCommentServlet",urlPatterns="/activity/deleteComment")
+public class ActivityDeleteCommentServlet extends HttpServlet{
 	/**
 	 * 
 	 */
@@ -45,14 +44,13 @@ public class PostDeleteCommentServlet extends HttpServlet{
 		ct = new ClassPathXmlApplicationContext(configFiles);
 		DataModelMapper dtMapper = (DataModelMapper) ct.getBean("DataModelMapper");
 		
-		PostServiceImpl pImpl = new PostServiceImpl(dtMapper);
+		ActivityServiceImpl aImpl = new ActivityServiceImpl(dtMapper);
 		
 		int commentID = Integer.parseInt(request.getParameter(CommentTable.C_ID));
+		HashMap<String,Object> result = aImpl.deleteComment(commentID);
 		
-		HashMap<String,Object> result = pImpl.deleteComment(commentID);
-		
-		out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
+	 	//String	retData = JSONObject.fromObject(result).toString();
 	 	
-	 	//out.print(FastJsonTool.createJsonString(result));
+	 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
 	}
 }

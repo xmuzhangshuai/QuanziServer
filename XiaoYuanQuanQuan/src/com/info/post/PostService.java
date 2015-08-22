@@ -28,4 +28,5 @@ public interface PostService {
     
     public HashMap<String,Object> commentReplyPosts(CommentModel comment);
     public HashMap<String,Object> getPostComments(int p_postid, int p_userid, int pageNow, int userid);
+    public HashMap<String,Object> deleteComment(int commentID);
 }

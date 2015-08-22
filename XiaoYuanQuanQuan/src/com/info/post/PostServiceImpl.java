@@ -75,7 +75,7 @@ public class PostServiceImpl extends Service implements PostService{
 		selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 		String where = "u_user.u_schoolid=" + school_id +
 				filters +
-				" and p_userid=u_id "+
+				" and p_userid=u_id and p_post_status='NORMAL' "+
 				//筛选出未关注用户的帖子
 				" and u_id not in("+
 				" select c_beconcerned_userid from c_concern where c_userid=" + userid + ")" +
@@ -431,7 +431,7 @@ public class PostServiceImpl extends Service implements PostService{
 		selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 		String where = "pf_like_userid=" + user_id +
 				" and p_postid=pf_postid and p_userid=pf_userid and u_id=pf_like_userid" +
-				" order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
+				" and p_post_status='NORMAL' order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
 		selectPost.put("where", where);
 		
 		concernSearch.put("tables", "c_concern");
@@ -645,7 +645,7 @@ public class PostServiceImpl extends Service implements PostService{
 		
 		selectPost.put("tables", "p_post,u_user");
 		selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
-		String where = "p_userid=" + userid + " and p_userid=u_id order by p_post_time desc";
+		String where = "p_userid=" + userid + " and p_userid=u_id and p_post_status='NORMAL' order by p_post_time desc";
 		selectPost.put("where", where);
 		
 		likeSearch.put("tables", "pf_post_favor");
@@ -733,7 +733,7 @@ public class PostServiceImpl extends Service implements PostService{
 				selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 				String where = "c_userid=" + userid +
 						" and p_userid=c_beconcerned_userid and u_id=p_userid or (p_userid="+userid+
-						" and u_id=p_userid) order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
+						" and u_id=p_userid) and p_post_status='NORMAL' order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
 				selectPost.put("where", where);
 				
 				likeSearch.put("tables", "pf_post_favor");
@@ -814,7 +814,7 @@ public class PostServiceImpl extends Service implements PostService{
 				selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 				String where = "u_user.u_schoolid=" + school_id +
 						filters +
-						" and p_post.p_userid=u_user.u_id order by p_post.p_post_time desc limit "+ from + "," + Info.NUM_PER_PAGE;
+						" and p_post.p_userid=u_user.u_id and p_post_status='NORMAL' order by p_post.p_post_time desc limit "+ from + "," + Info.NUM_PER_PAGE;
 				selectPost.put("where", where);
 				
 				likeSearch.put("tables", "pf_post_favor");
@@ -874,6 +874,24 @@ public class PostServiceImpl extends Service implements PostService{
 					result.put(Info.DATA, -1);
 				}
 				return result;
+	}
+
+	@Override
+	public HashMap<String, Object> deleteComment(int commentID) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> result = new HashMap<String,Object>();
+		HashMap<String, Object> delete = new HashMap<String,Object>();
+		
+		delete.put("table", "pc_post_comment");
+		delete.put("where", "pc_commentid="+commentID);
+		
+		try{
+			this.getDtMapper().deleteModel(delete);
+			result.put(Info.DATA, 1);
+		}catch(Exception e){
+			result.put(Info.DATA, -1);
+		}
+		return result;
 	}
 
 	
