@@ -11,6 +11,7 @@ public interface ActivityService {
 	public HashMap<String,Object> getSchoolActivities(int schoolid, int pageNow, int userid, String type);
 	public HashMap<String,Object> getActsByUserID(int userid);
 	
+	public HashMap<String,Object> getActivity(int actid, int userid, int my_userid);
 	
     public HashMap<String,Object> addActivity(String big_img_path_list,String small_img_path_list,int userid, String n_content, String title, String type, String time, String address, String target);
     public HashMap<String,Object> deleteActivity(int a_id, int a_user_id);

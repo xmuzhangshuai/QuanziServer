@@ -426,7 +426,7 @@ public class QuanziServiceImpl extends Service implements QuanziService {
 		
 		select.put("tables", "u_user,c_concern");
 		select.put("fields", "u_id,u_nickname,u_gender,u_small_avatar,c_concern.*");
-		select.put("where", "c_beconcerned_userid=" + userid + " and u_id=c_userid and c_read=0 order by c_concern_time desc");
+		select.put("where", "c_beconcerned_userid=" + userid + " and u_id=c_userid order by c_concern_time desc");
 		
 		concernSearch.put("tables", "c_concern");
 		concernSearch.put("fields", "c_id");

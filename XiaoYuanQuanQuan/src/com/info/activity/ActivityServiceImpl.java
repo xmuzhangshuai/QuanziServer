@@ -172,11 +172,10 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		
 		HashMap<String,Object> c = new HashMap<String,Object>();
 		//JSONObject jsonCondition = JSONObject.fromObject(condition);
-		String where = "a_userid="+a_user_id+"and a_actid="+a_actid;
+		String where = "a_userid="+a_user_id+" and a_actid="+a_actid;
 		c.put("table", "a_activity");
 		c.put("where", where);
 		c.put("expression", "a_status="+"'DELETE'");
-		
 		
 		try{
 			this.getDtMapper().updateModels(c);
@@ -191,6 +190,7 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 			result.put(Info.STATUS, Info.SUCCEED);
 			result.put(Info.DATA, 1);
 		}catch(Exception e){
+			e.printStackTrace();
 			result.put(Info.STATUS, Info.FAILED);
 			result.put(Info.DATA, -1);
 		}
@@ -686,6 +686,83 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 			this.getDtMapper().deleteModel(delete);
 			result.put(Info.DATA, 1);
 		}catch(Exception e){
+			result.put(Info.DATA, -1);
+		}
+		return result;
+	}
+	@Override
+	public HashMap<String, Object> getActivity(int actid, int userid,
+			int my_userid) {
+		// TODO Auto-generated method stub
+		HashMap<String,Object> select = new HashMap<String,Object>();
+		HashMap<String,Object> selectComment = new HashMap<String,Object>();
+		
+		HashMap<String,Object> likeSearch = new HashMap<String,Object>();
+		List<HashMap<String,Object>> likeItem = new ArrayList<HashMap<String,Object>>();
+		
+		HashMap<String,Object> applySearch = new HashMap<String,Object>();
+		List<HashMap<String,Object>> applyItem = new ArrayList<HashMap<String,Object>>();
+		
+		HashMap<String,Object> result = new HashMap<String,Object>();
+		List<JsonActItem> actList = new ArrayList<JsonActItem>(); 
+		
+		select.put("tables", "a_activity,u_user");
+		select.put("fields", "a_activity.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
+		String where = "a_userid=" + userid +" and a_actid=" + actid + " and u_id=a_userid and a_status='NORMAL' order by a_addtime desc";
+		select.put("where", where);
+		
+		likeSearch.put("tables", "af_act_favor");
+		likeSearch.put("fields", "af_id");//如果有数据就代表喜欢该活动
+		
+		applySearch.put("tables", "aa_act_apply");
+		applySearch.put("fields", "aa_id");//如果有数据就代表加入了该活动
+		
+		try{
+			actList = this.getDtMapper().selectSchoolActivity(select);
+			//A评论或者回复B
+			selectComment.put("tables", "ac_act_comment,u_user A, u_user B");
+			selectComment.put("fields", "ac_commentid as commentid,"
+					+ "ac_act_id as id,ac_userid as userid,ac_comment_time as comment_time,"
+					+ "ac_content as content,ac_type as type,ac_comment_userid as comment_userid,"
+					+ "ac_to_userid as to_userid,"
+					+ "A.u_small_avatar as Aavatar, A.u_nickname as Anickname, A.u_gender as Agender,"
+					+ "B.u_nickname as Bnickname");
+			
+			for(JsonActItem act:actList){
+				String ct;
+				ct = "ac_act_id=" + act.getA_actid() + " and ac_userid=" + act.getA_userid()
+						+ " and A.u_id=ac_comment_userid and B.u_id=ac_to_userid"
+						+ " order by ac_comment_time desc limit 0,2";
+
+				selectComment.put("where", ct);
+				List<Map<String,String>> comments = this.getDtMapper().selectModelsValueString(selectComment);
+				act.setCommentList(comments);
+				
+				//查询是否喜欢该活动
+				likeSearch.put("where", "af_act_id=" + act.getA_actid()
+						+ " and af_user_id=" + act.getA_userid()
+						+ " and af_like_userid=" + userid);
+				likeItem = this.getDtMapper().selectModels(likeSearch);
+				if(likeItem.size()==1)
+					act.setLike(true);
+				else if(likeItem.size()==0)
+					act.setLike(false);
+				//查询是否报名该活动
+				applySearch.put("where", "aa_act_id=" + act.getA_actid()
+						+ " and aa_user_id=" + act.getA_userid()
+						+ " and aa_apply_userid=" + userid);
+				applyItem = this.getDtMapper().selectModels(applySearch);
+				if(applyItem.size()==1)
+					act.setApply(true);
+				else if(applyItem.size()==0)
+					act.setApply(false);
+			}
+			
+			result.put(Info.STATUS, Info.SUCCEED);
+			result.put(Info.DATA, actList);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			result.put(Info.STATUS, Info.SERVER_EXCEPTION);
 			result.put(Info.DATA, -1);
 		}
 		return result;

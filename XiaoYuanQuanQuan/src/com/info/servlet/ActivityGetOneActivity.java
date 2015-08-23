@@ -14,14 +14,15 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.info.activity.ActivityServiceImpl;
 import com.info.basic.DataModelMapper;
-import com.info.post.PostServiceImpl;
 import com.info.sys.FastJsonTool;
 import com.info.sys.Info;
+import com.info.table.ActivityTable;
 import com.info.table.UserTable;
 
-@WebServlet(name="getPostsByUserIDServlet",urlPatterns="/post/getPostsByUserID")
-public class PostGetPostsByUserIDServlet extends HttpServlet{
+@WebServlet(name="getOneActivityServlet",urlPatterns="/activity/getActivityByID")
+public class ActivityGetOneActivity extends HttpServlet{
 	/**
 	 * 
 	 */
@@ -43,13 +44,13 @@ public class PostGetPostsByUserIDServlet extends HttpServlet{
 		ct = new ClassPathXmlApplicationContext(configFiles);
 		DataModelMapper dtMapper = (DataModelMapper) ct.getBean("DataModelMapper");
 		
-		PostServiceImpl pImpl = new PostServiceImpl(dtMapper);
+		ActivityServiceImpl aImpl = new ActivityServiceImpl(dtMapper);
 		
-		//int pageNow = Integer.parseInt(request.getParameter("page"));
-		int userid = Integer.parseInt(request.getParameter(UserTable.U_ID));
-		int checkUserID = Integer.parseInt(request.getParameter("my_userid"));
+		int actid = Integer.parseInt(request.getParameter(ActivityTable.A_ACTID));
+		int userid = Integer.parseInt(request.getParameter(ActivityTable.A_USERID));
+		int my_userid = Integer.parseInt(request.getParameter("my_userid"));
+		HashMap<String,Object> result = aImpl.getActivity(actid, userid, my_userid);
+		out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));	
 		
-		HashMap<String,Object> result = pImpl.getPostsByUserID(userid,checkUserID);
-		out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));		
 	}
 }

@@ -14,7 +14,9 @@ public interface PostService {
     public HashMap<String,Object> getFilteredPosts(int school_id, int userid, HashMap<String,String> filter, int pageNow);
     public HashMap<String,Object> getPostsContainComments(int school_id, int pageNow);
     
-    public HashMap<String,Object> getPostsByUserID(int userid);
+    public HashMap<String,Object> getPost(int postid, int userid, int my_userid);
+    
+    public HashMap<String,Object> getPostsByUserID(int userid, int my_userid);
     public HashMap<String,Object> getMyLikePosts(int user_id);
     public HashMap<String,Object> addPost(String bigImgPaths, String smallImgPaths, int userid, String content);
     public HashMap<String,Object> deletePost(int post_id, int user_id);

@@ -18,10 +18,10 @@ import com.info.basic.DataModelMapper;
 import com.info.post.PostServiceImpl;
 import com.info.sys.FastJsonTool;
 import com.info.sys.Info;
-import com.info.table.UserTable;
+import com.info.table.PostTable;
 
-@WebServlet(name="getPostsByUserIDServlet",urlPatterns="/post/getPostsByUserID")
-public class PostGetPostsByUserIDServlet extends HttpServlet{
+@WebServlet(name="getPostServlet",urlPatterns="/post/getPostByID")
+public class PostGetPost extends HttpServlet{
 	/**
 	 * 
 	 */
@@ -46,10 +46,11 @@ public class PostGetPostsByUserIDServlet extends HttpServlet{
 		PostServiceImpl pImpl = new PostServiceImpl(dtMapper);
 		
 		//int pageNow = Integer.parseInt(request.getParameter("page"));
-		int userid = Integer.parseInt(request.getParameter(UserTable.U_ID));
+		int userid = Integer.parseInt(request.getParameter(PostTable.P_USERID));
+		int postid = Integer.parseInt(request.getParameter(PostTable.P_POSTID));
 		int checkUserID = Integer.parseInt(request.getParameter("my_userid"));
 		
-		HashMap<String,Object> result = pImpl.getPostsByUserID(userid,checkUserID);
+		HashMap<String,Object> result = pImpl.getPost(postid, userid, checkUserID);
 		out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));		
 	}
 }

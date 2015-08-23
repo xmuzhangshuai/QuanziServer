@@ -107,7 +107,7 @@ public class PostServiceImpl extends Service implements PostService{
 				ct = "pc_postid=" + post.getP_postid() + " and pc_userid=" + post.getP_userid()
 						+ " and A.u_id=pc_comment_userid and B.u_id=pc_to_userid"
 						+ " and (pc_comment_userid=" + userid
-						+ " or pc_to_userid=" + userid +")"
+						+ " or pc_to_userid=" + userid + ")"
 						+ " order by pc_comment_time desc limit 0,2";
 
 				selectComment.put("where", ct);
@@ -245,7 +245,7 @@ public class PostServiceImpl extends Service implements PostService{
 		
 		HashMap<String,Object> c = new HashMap<String,Object>();
 		//JSONObject jsonCondition = JSONObject.fromObject(condition);
-		String where = "p_userid="+user_id+"and p_postid="+post_id;
+		String where = "p_userid="+user_id+" and p_postid="+post_id;
 		c.put("table", "p_post");
 		c.put("where", where);
 		c.put("expression", "p_post_status="+"'DELETE'");
@@ -263,6 +263,7 @@ public class PostServiceImpl extends Service implements PostService{
 			result.put(Info.STATUS, Info.SUCCEED);
 			result.put(Info.DATA, 1);
 		}catch(Exception e){
+			e.printStackTrace();
 			result.put(Info.STATUS, Info.FAILED);
 			result.put(Info.DATA, -1);
 		}
@@ -612,6 +613,9 @@ public class PostServiceImpl extends Service implements PostService{
 					+ "B.u_nickname as Bnickname");
 			String ct = "pc_postid=" + p_postid + " and pc_userid=" + p_userid
 						+ " and A.u_id=pc_comment_userid and B.u_id=pc_to_userid"
+						//只能看到发帖和自己的互动
+						+ " and (pc_comment_userid=" + userid
+						+ " or pc_to_userid=" + userid + ")"
 						+ " order by pc_comment_time desc limit "
 						+ from
 						+ ","
@@ -630,7 +634,7 @@ public class PostServiceImpl extends Service implements PostService{
 	}
 
 	@Override
-	public HashMap<String, Object> getPostsByUserID(int userid) {
+	public HashMap<String, Object> getPostsByUserID(int userid, int my_userid) {
 		// TODO Auto-generated method stub
 		HashMap<String,Object> selectPost = new HashMap<String,Object>();
 		HashMap<String,Object> selectComment = new HashMap<String,Object>();
@@ -671,30 +675,12 @@ public class PostServiceImpl extends Service implements PostService{
 
 				selectComment.put("where", ct);
 				List<Map<String,String>> comments = dtMapper.selectModelsValueString(selectComment);
-//				for(int i = 0; i < comments.size(); i++){
-//					Map<String,String> c = new HashMap<String,String>();
-//					c.put(CommentTable.C_ID, String.valueOf(comments.get(i).get("pc_commentid")));
-//					c.put(CommentTable.P_ID, String.valueOf(comments.get(i).get("pc_postid")));
-//					c.put(CommentTable.P_USERID, String.valueOf(comments.get(i).get("pc_userid")));
-//					//c.put(CommentTable.p, comments.get(i).get("pc_comment_time").toString());
-//					c.put(CommentTable.C_CONTENT, comments.get(i).get("pc_content").toString());
-//					c.put(CommentTable.COMMENT_TYPE, comments.get(i).get("pc_type").toString());
-//					c.put(CommentTable.C_USER_ID, String.valueOf(comments.get(i).get("pc_comment_userid")));
-//					c.put(CommentTable.C_USER_AVATAR, comments.get(i).get("Aavatar").toString());
-//					c.put(CommentTable.C_USER_GENDER, comments.get(i).get("Agender").toString());
-//					c.put(CommentTable.C_USER_NICKNAME, comments.get(i).get("Anickname").toString());
-//					//TimeStamp comment_ts = (TimeStamp)comments.get(i).get("pc_comment_time");
-//					//Date comment_time = new ((TimeStamp)(comments.get(i).get("pc_comment_time")).ge)
-//					//c.put(CommentTable.C_TIME, comments.get(i).get("pc_comment_time").toString());
-//					c.put(CommentTable.TO_USER_ID, String.valueOf(comments.get(i).get("pc_to_userid")));
-//					c.put(CommentTable.TO_USER_NICKNAME, comments.get(i).get("Bnickname").toString());
-//	
-//				}
+				
 				post.setCommentList(comments);
 				//查询是否喜欢该帖子
 				likeSearch.put("where", "pf_postid=" + post.getP_postid()
 						+ " and pf_userid=" + post.getP_userid()
-						+ " and pf_like_userid=" + userid);
+						+ " and pf_like_userid=" + my_userid);
 				likeItem = dtMapper.selectModels(likeSearch);
 				if(likeItem.size()==1)
 					post.setLike(true);
@@ -755,6 +741,7 @@ public class PostServiceImpl extends Service implements PostService{
 						String ct;
 						ct = "pc_postid=" + post.getP_postid() + " and pc_userid=" + post.getP_userid()
 								+ " and A.u_id=pc_comment_userid and B.u_id=pc_to_userid"
+								//只能看到自己和发帖人之间的互动
 								+ " and (pc_comment_userid=" + userid
 								+ " or pc_to_userid=" + userid +")"
 								+ " order by pc_comment_time desc limit 0,2";
@@ -892,6 +879,71 @@ public class PostServiceImpl extends Service implements PostService{
 			result.put(Info.DATA, -1);
 		}
 		return result;
+	}
+
+	@Override
+	public HashMap<String, Object> getPost(int postid, int userid, int my_userid) {
+		// TODO Auto-generated method stub
+				HashMap<String,Object> selectPost = new HashMap<String,Object>();
+				HashMap<String,Object> selectComment = new HashMap<String,Object>();
+				DataModelMapper dtMapper = this.getDtMapper();
+				
+				HashMap<String,Object> result = new HashMap<String,Object>();
+				
+				List<JsonPostItem> postList = new ArrayList<JsonPostItem>(); 
+				
+				HashMap<String,Object> likeSearch = new HashMap<String,Object>();
+				List<HashMap<String,Object>> likeItem = new ArrayList<HashMap<String,Object>>();
+				
+				selectPost.put("tables", "p_post,u_user");
+				selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
+				String where = "p_userid=" + userid + " and p_postid=" + postid + " and u_id=p_userid and p_post_status='NORMAL' order by p_post_time desc";
+				selectPost.put("where", where);
+				
+				likeSearch.put("tables", "pf_post_favor");
+				likeSearch.put("fields", "pf_id");//如果有数据就代表喜欢该帖子
+				
+				try{
+					postList = dtMapper.selectSchoolPost(selectPost);
+					System.out.println(postList.size());
+					//A评论或者回复B
+					selectComment.put("tables", "pc_post_comment,u_user A, u_user B");
+					selectComment.put("fields", "pc_commentid as commentid,"
+							+ "pc_postid as id,pc_userid as userid,pc_comment_time as comment_time,"
+							+ "pc_content as content,pc_type as type,pc_comment_userid as comment_userid,"
+							+ "pc_to_userid as to_userid,"
+							+ "A.u_small_avatar as Aavatar, A.u_nickname as Anickname, A.u_gender as Agender,"
+							+ "B.u_nickname as Bnickname");
+					for(JsonPostItem post:postList){
+						String ct;
+						ct = "pc_postid=" + post.getP_postid() + " and pc_userid=" + post.getP_userid()
+								+ " and A.u_id=pc_comment_userid and B.u_id=pc_to_userid"
+								+ " and (pc_comment_userid=" + userid
+								+ " or pc_to_userid=" + userid +")"
+								+ " order by pc_comment_time desc limit 0,5";//显示五条
+
+						selectComment.put("where", ct);
+						List<Map<String,String>> comments = dtMapper.selectModelsValueString(selectComment);
+						
+						post.setCommentList(comments);
+						//查询是否喜欢该帖子
+						likeSearch.put("where", "pf_postid=" + post.getP_postid()
+								+ " and pf_userid=" + post.getP_userid()
+								+ " and pf_like_userid=" + my_userid);
+						likeItem = dtMapper.selectModels(likeSearch);
+						if(likeItem.size()==1)
+							post.setLike(true);
+						else if(likeItem.size()==0)
+							post.setLike(false);				
+					}
+					result.put(Info.STATUS, Info.SUCCEED);
+					result.put(Info.DATA, postList);
+				}catch(Exception e){
+					System.out.println(e.getMessage());
+					result.put(Info.STATUS, Info.SERVER_EXCEPTION);
+					result.put(Info.DATA, -1);
+				}
+				return result;
 	}
 
 	
