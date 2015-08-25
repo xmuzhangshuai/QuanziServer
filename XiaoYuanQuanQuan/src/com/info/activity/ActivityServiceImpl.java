@@ -171,21 +171,29 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		HashMap<String,Object> result = new HashMap<String,Object>();
 		
 		HashMap<String,Object> c = new HashMap<String,Object>();
+		HashMap<String,Object> delete = new HashMap<String,Object>();
 		//JSONObject jsonCondition = JSONObject.fromObject(condition);
 		String where = "a_userid="+a_user_id+" and a_actid="+a_actid;
 		c.put("table", "a_activity");
 		c.put("where", where);
 		c.put("expression", "a_status="+"'DELETE'");
 		
+		delete.put("table", "m_message");
+		delete.put("where", "pa_id=" + a_actid + " and pa_userid=" + a_user_id);
+		
+		DataModelMapper dtMapper = this.getDtMapper();
+		
 		try{
-			this.getDtMapper().updateModels(c);
+			dtMapper.updateModels(c);
 			
 			HashMap<String,Object> updateOp = new HashMap<String,Object>();
 			updateOp.put("table", "u_user");
 			updateOp.put("expression", "u_act_amount=u_act_amount-1");
 			String u_where = "u_id="+a_user_id;
 			updateOp.put("where", u_where);			
-			this.getDtMapper().updateModels(updateOp);
+			dtMapper.updateModels(updateOp);
+			
+			dtMapper.deleteModel(delete);
 			
 			result.put(Info.STATUS, Info.SUCCEED);
 			result.put(Info.DATA, 1);
@@ -759,7 +767,7 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 			}
 			
 			result.put(Info.STATUS, Info.SUCCEED);
-			result.put(Info.DATA, actList);
+			result.put(Info.DATA, actList.get(0));
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			result.put(Info.STATUS, Info.SERVER_EXCEPTION);

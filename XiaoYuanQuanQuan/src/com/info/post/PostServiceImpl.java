@@ -197,10 +197,16 @@ public class PostServiceImpl extends Service implements PostService{
 		HashMap<String,Object> result = new HashMap<String,Object>();
 		try{
 			HashMap<String,Object> selectOp = new HashMap<String,Object>();
-			String where = "u_id="+userid;
-			selectOp.put("tables", "u_user");
-			selectOp.put("field", "u_post_amount+1 as post_amount");
+//			String where = "u_id="+userid;
+//			selectOp.put("tables", "u_user");
+//			selectOp.put("field", "u_post_amount+1 as post_amount");
+//			selectOp.put("where", where);
+			
+			String where = "p_userid="+userid;
+			selectOp.put("tables", "p_post");
+			selectOp.put("field", "max(p_postid)+1 as post_amount");
 			selectOp.put("where", where);
+			
 			String post_amount = this.getDtMapper().selectValue(selectOp);
 			
 			
@@ -244,21 +250,29 @@ public class PostServiceImpl extends Service implements PostService{
 		HashMap<String,Object> result = new HashMap<String,Object>();
 		
 		HashMap<String,Object> c = new HashMap<String,Object>();
+		
+		HashMap<String,Object> delete = new HashMap<String,Object>();//删除消息
 		//JSONObject jsonCondition = JSONObject.fromObject(condition);
 		String where = "p_userid="+user_id+" and p_postid="+post_id;
 		c.put("table", "p_post");
 		c.put("where", where);
 		c.put("expression", "p_post_status="+"'DELETE'");
+		
+		delete.put("table", "m_message");
+		delete.put("where", "pa_id=" + post_id + " and pa_userid=" + user_id);
 
+		DataModelMapper dtMapper = this.getDtMapper();
 		try{
-			this.getDtMapper().updateModels(c);;
+			dtMapper.updateModels(c);;
 			
 			HashMap<String,Object> updateOp = new HashMap<String,Object>();
 			updateOp.put("table", "u_user");
 			updateOp.put("expression", "u_post_amount=u_post_amount-1");
 			String u_where = "u_id="+user_id;
 			updateOp.put("where", u_where);			
-			this.getDtMapper().updateModels(updateOp);
+			dtMapper.updateModels(updateOp);
+			
+			dtMapper.deleteModel(delete);
 			
 			result.put(Info.STATUS, Info.SUCCEED);
 			result.put(Info.DATA, 1);
@@ -939,17 +953,12 @@ public class PostServiceImpl extends Service implements PostService{
 							post.setLike(false);				
 					}
 					result.put(Info.STATUS, Info.SUCCEED);
-					result.put(Info.DATA, postList);
+					result.put(Info.DATA, postList.get(0));
 				}catch(Exception e){
 					System.out.println(e.getMessage());
 					result.put(Info.STATUS, Info.SERVER_EXCEPTION);
 					result.put(Info.DATA, -1);
 				}
 				return result;
-	}
-
-	
-
-	
-	
+	}	
 }
