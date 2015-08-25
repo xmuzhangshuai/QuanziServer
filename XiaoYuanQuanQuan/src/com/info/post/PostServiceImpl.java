@@ -716,10 +716,12 @@ public class PostServiceImpl extends Service implements PostService{
 				//int from = pageNow * Info.NUM_PER_PAGE;
 				
 				selectPost.put("tables", "p_post,u_user,c_concern");
-				selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
-				String where = "c_userid=" + userid +
-						" and p_userid=c_beconcerned_userid and u_id=p_userid or (p_userid="+userid+
-						" and u_id=p_userid) and p_post_status='NORMAL' order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
+				selectPost.put("fields", "distinct p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
+				String where = "(p_userid=" + userid +
+						" and u_id=p_userid) or" +
+						" c_userid=" + userid +
+						" and p_userid=c_beconcerned_userid and u_id=p_userid " +
+						" and p_post_status='NORMAL' order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
 				selectPost.put("where", where);
 				
 				likeSearch.put("tables", "pf_post_favor");

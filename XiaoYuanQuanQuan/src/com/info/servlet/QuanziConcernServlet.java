@@ -47,11 +47,15 @@ public class QuanziConcernServlet extends HttpServlet{
 		
 		int c_userid = Integer.parseInt(request.getParameter(QuanziTable.C_USERID));
 		int c_beconcerned_userid = Integer.parseInt(request.getParameter(QuanziTable.C_BECONCERNED_USERID));
+		if(c_userid==c_beconcerned_userid){
+			out.print(FastJsonTool.createJsonString(-3));//不能自己关注自己
+		}else{
+			HashMap<String,Object> result = qImpl.concern(c_userid, c_beconcerned_userid);
+			
+		 	//String	retData = JSONObject.fromObject(result).toString();
+		 	
+		 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
+		}
 		
-		HashMap<String,Object> result = qImpl.concern(c_userid, c_beconcerned_userid);
-		
-	 	//String	retData = JSONObject.fromObject(result).toString();
-	 	
-	 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
 	}
 }
