@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.lxh.smart.File;
-import org.lxh.smart.Files;
-import org.lxh.smart.SmartUpload;
-import org.lxh.smart.SmartUploadException;
+import com.jspsmart.upload.File;
+import com.jspsmart.upload.Files;
+import com.jspsmart.upload.SmartUpload;
+import com.jspsmart.upload.SmartUploadException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -93,12 +93,12 @@ public class ActivityAddServlet extends HttpServlet{
 			su.upload();
 			int ss = su.getFiles().getCount();
 			
-			n_content = Function.mysql_validate_string(new String(su.getRequest().getParameter(ActivityTable.A_CONTENT))).trim();
+			n_content = Function.mysql_validate_string(new String(su.getRequest().getParameter(ActivityTable.A_CONTENT).getBytes(),"utf-8")).trim();
 			//处理特殊字符
 			if(!n_content.equals("")){
 				userid = Integer.parseInt(su.getRequest().getParameter(ActivityTable.A_USERID));
-				title = Function.mysql_validate_string(new String(su.getRequest().getParameter(ActivityTable.A_ACT_TITLE)));
-				type = new String(su.getRequest().getParameter(ActivityTable.A_ACT_TYPE));
+				title = Function.mysql_validate_string(new String(su.getRequest().getParameter(ActivityTable.A_ACT_TITLE).getBytes(),"utf-8"));
+				type = new String(su.getRequest().getParameter(ActivityTable.A_ACT_TYPE).getBytes(),"utf-8");
 				
 				time = new String(su.getRequest().getParameter(ActivityTable.A_ACTTIME));
 				System.out.println(time);
@@ -109,8 +109,8 @@ public class ActivityAddServlet extends HttpServlet{
 				
 				System.out.println(time);
 				
-				address = Function.mysql_validate_string(new String(su.getRequest().getParameter(ActivityTable.A_ADDRESS)));
-				target = new String(su.getRequest().getParameter(ActivityTable.A_TARGET));
+				address = Function.mysql_validate_string(new String(su.getRequest().getParameter(ActivityTable.A_ADDRESS).getBytes(),"utf-8"));
+				target = new String(su.getRequest().getParameter(ActivityTable.A_TARGET).getBytes(),"utf-8");
 				
 								
 				Files files = su.getFiles();

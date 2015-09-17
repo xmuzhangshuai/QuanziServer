@@ -77,8 +77,9 @@ public class PostServiceImpl extends Service implements PostService{
 				filters +
 				" and p_userid=u_id and p_post_status='NORMAL' "+
 				//筛选出未关注用户的帖子
-				" and u_id not in("+
+				" and u_id not in(" +
 				" select c_beconcerned_userid from c_concern where c_userid=" + userid + ")" +
+				" and u_id!=" + userid + 
 				" order by p_post_time desc limit "+ from + "," + Info.NUM_PER_PAGE;
 		selectPost.put("where", where);
 		
@@ -153,6 +154,7 @@ public class PostServiceImpl extends Service implements PostService{
 			}
 			result.put(Info.STATUS, Info.SUCCEED);
 			result.put(Info.DATA, postList);
+			System.out.println("帖子共有"+postList.size());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			result.put(Info.STATUS, Info.SERVER_EXCEPTION);
@@ -208,6 +210,8 @@ public class PostServiceImpl extends Service implements PostService{
 			selectOp.put("where", where);
 			
 			String post_amount = this.getDtMapper().selectValue(selectOp);
+			if(post_amount==null)
+				post_amount = "1";
 			
 			
 			String p_thumbnail_list_string="";
@@ -445,7 +449,7 @@ public class PostServiceImpl extends Service implements PostService{
 		selectPost.put("tables", "p_post,u_user,pf_post_favor");
 		selectPost.put("fields", "p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 		String where = "pf_like_userid=" + user_id +
-				" and p_postid=pf_postid and p_userid=pf_userid and u_id=pf_like_userid" +
+				" and p_postid=pf_postid and p_userid=pf_userid and u_id=pf_userid" +
 				" and p_post_status='NORMAL' order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
 		selectPost.put("where", where);
 		
@@ -715,7 +719,7 @@ public class PostServiceImpl extends Service implements PostService{
  * @see com.info.post.PostService#getQuanziPosts(int)
  */
 	@Override
-	public HashMap<String, Object> getQuanziPosts(int userid) {
+	public HashMap<String, Object> getQuanziPosts(int userid, int pageNow) {
 		// TODO Auto-generated method stub
 				HashMap<String,Object> selectPost = new HashMap<String,Object>();
 				HashMap<String,Object> selectComment = new HashMap<String,Object>();
@@ -727,15 +731,15 @@ public class PostServiceImpl extends Service implements PostService{
 				
 				List<JsonPostItem> postList = new ArrayList<JsonPostItem>(); 
 				
-				//int from = pageNow * Info.NUM_PER_PAGE;
+				int from = pageNow * Info.NUM_PER_PAGE;
 				
 				selectPost.put("tables", "p_post,u_user,c_concern");
 				selectPost.put("fields", "distinct p_post.*,u_id,u_nickname,u_small_avatar,u_large_avatar,u_gender");
 				String where = "(p_userid=" + userid +
-						" and u_id=p_userid) or" +
+						" and u_id=p_userid and p_post_status='NORMAL') or" +
 						" c_userid=" + userid +
 						" and p_userid=c_beconcerned_userid and u_id=p_userid " +
-						" and p_post_status='NORMAL' order by p_post_time desc";// limit "+ from + "," + Info.NUM_PER_PAGE;
+						" and p_post_status='NORMAL' order by p_post_time desc limit "+ from + "," + Info.NUM_PER_PAGE;
 				selectPost.put("where", where);
 				
 				likeSearch.put("tables", "pf_post_favor");
@@ -885,13 +889,29 @@ public class PostServiceImpl extends Service implements PostService{
 		HashMap<String, Object> result = new HashMap<String,Object>();
 		HashMap<String, Object> delete = new HashMap<String,Object>();
 		
+		DataModelMapper dtMapper = this.getDtMapper();
+		
+		HashMap<String,Object> search = new HashMap<String, Object>();
+		search.put("tables", "pc_post_comment");
+		search.put("fields", "pc_postid,pc_userid");
+		search.put("where", "pc_commentid=" + commentID);
+		
 		delete.put("table", "pc_post_comment");
 		delete.put("where", "pc_commentid="+commentID);
 		
+		HashMap<String,Object> post = dtMapper.selectModels(search).get(0);
+		HashMap<String,Object> update = new HashMap<String,Object>();
+		update.put("table", "p_post");
+		update.put("expression", "p_comment_count=p_comment_count-1");
+		update.put("where", "p_postid="+post.get("pc_postid")+
+				" and p_userid="+post.get("pc_userid"));
+		
 		try{
-			this.getDtMapper().deleteModel(delete);
+			dtMapper.deleteModel(delete);
+			dtMapper.updateModels(update);
 			result.put(Info.DATA, 1);
 		}catch(Exception e){
+			e.printStackTrace();
 			result.put(Info.DATA, -1);
 		}
 		return result;

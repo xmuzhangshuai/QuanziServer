@@ -41,4 +41,6 @@ public interface UserService {
 	public HashMap<String,Object> getSkills(int userid);
 	
 	public HashMap<String,Object> getMsg(int userid, int pageNow);
+	
+	public HashMap<String,Object> validatStudentID(String stu_num, String pwd, String school_id);
 	}

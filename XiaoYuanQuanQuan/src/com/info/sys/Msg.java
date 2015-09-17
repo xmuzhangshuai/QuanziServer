@@ -10,14 +10,15 @@ public class Msg {
 	public static String sendMsg(String tel){
 		HashMap<String, Object> result = null;
 		CCPRestSDK restAPI = new CCPRestSDK();
-		restAPI.init("sandboxapp.cloopen.com", "8883");
-		restAPI.setAccount("aaf98f894ebe0e7e014ebf43587b02a4", "3c52bae42ebc4ed0a7c60724eabf008e");
+		restAPI.init("app.cloopen.com", "8883");
+		restAPI.setAccount("8a48b5514f4fc588014f6a98b17d3a93", "5058339b1174440083b464fa2fc21c4d");
 		
-		restAPI.setAppId("aaf98f894ebe0e7e014ebf43995d02a6");
+		restAPI.setAppId("8a48b5514f73ea32014f78b06534078b");
 		Random random = new Random();
 		int number = random.nextInt(900000)+100000;
 		String code = number+""; 
-		result = restAPI.sendTemplateSMS(tel,"1" ,new String[]{number+"","2"});
+		result = restAPI.sendTemplateSMS(tel,"34067" ,new String[]{number+"","2"});
+		//result = restAPI.sendSMS(tel, "欢迎注册校园圈子你的验证码是:"+number+"请及时输入。【校园圈子】");
 
 		System.out.println("SDKTestGetSubAccounts result=" + result);
 		if("000000".equals(result.get("statusCode"))){

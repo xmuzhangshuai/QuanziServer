@@ -234,8 +234,8 @@ public class QuanziServiceImpl extends Service implements QuanziService {
 		//JSONObject infoJSON = JSONObject.fromObject(info);
 		
 		String where= "c_beconcerned_userid="+c_beconcerned_userid
-				+" and c_userid=u_id"
-				+" and u_industry_item=i_name group by i_id";
+				+" and u_id=c_userid"
+				+" and i_name=u_industry_item group by i_id";
 		
 		selectOp.put("tables", "c_concern,u_user,i_industry");
 		selectOp.put("fields", "i_industry.i_id,i_industry.i_name,COUNT(i_id) as amount");
@@ -265,8 +265,8 @@ public class QuanziServiceImpl extends Service implements QuanziService {
 		//JSONObject infoJSON = JSONObject.fromObject(info);
 		
 		String where= "c_userid="+c_userid
-				+" and c_beconcerned_userid=u_id"
-				+" and u_industry_item=i_name group by i_id";
+				+" and u_id=c_beconcerned_userid"
+				+" and i_name=u_industry_item group by i_id";
 		
 		selectOp.put("tables", "c_concern,u_user,i_industry");
 		selectOp.put("fields", "i_industry.i_id,i_industry.i_name,COUNT(i_id) as amount");

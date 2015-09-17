@@ -17,6 +17,7 @@ import com.info.json.JsonMyMessage;
 import com.info.json.JsonUser;
 import com.info.model.UserModel;
 import com.info.sys.Info;
+import com.info.sys.StudentValidate;
 import com.info.table.UserTable;
 
 public class UserServiceImpl extends Service implements UserService{
@@ -69,15 +70,47 @@ public class UserServiceImpl extends Service implements UserService{
 		HashMap<String,Object> result = new HashMap<String,Object>();
 		
 		HashMap<String,Object> c = new HashMap<String,Object>();
-		try{
-			this.getDtMapper().insertUser(user);
-			result.put(Info.STATUS, Info.SUCCEED);
-			result.put(Info.DATA, user.getU_id());
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-			result.put(Info.STATUS, Info.FAILED);
-			result.put(Info.DATA, -1);
-		}		
+		
+		DataModelMapper dtMapper = this.getDtMapper();
+		/******
+		 * 教务处验证
+		 */
+		String stu_num = user.getU_student_number();
+		String pwd = user.getU_student_pass();
+		System.out.println("pwd="+pwd);
+		//获取教务处学校验证ID
+		HashMap<String,Object> s = new HashMap<String,Object>();
+		s.put("tables", "s_school");
+		s.put("where", "s_id=" + user.getU_schoolid());
+		s.put("field", "s_validate_id");
+		String validate_id = dtMapper.selectValue(s);
+		
+		HashMap<String,Object> v_result = new HashMap<String,Object>();
+		
+		String jw_school_id = null;
+		if(user.getU_schoolid()==870){
+			jw_school_id = "1";
+			//v_result = validatStudentID(stu_num, pwd, jw_school_id);
+			v_result.put(Info.DATA, "1");
+		}			
+		else if(user.getU_schoolid() == 8700){
+			jw_school_id = "2";
+			v_result.put(Info.DATA, "1");
+			user.setU_schoolid(870);
+		}	
+		if(String.valueOf(v_result.get(Info.DATA)).equals("1")){//登录教务处成功
+			try{
+				dtMapper.insertUser(user);
+				result.put(Info.STATUS, Info.SUCCEED);
+				result.put(Info.DATA, user.getU_id());
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+				result.put(Info.STATUS, Info.FAILED);
+				result.put(Info.DATA, -1);
+			}		
+		}
+		else
+			result = v_result;
 		return result;
 	}
 	/*
@@ -674,6 +707,55 @@ public class UserServiceImpl extends Service implements UserService{
 			e.printStackTrace();
 			result.put(Info.DATA, -1);
 			
+		}
+		return result;
+	}
+	@Override
+	public HashMap<String, Object> validatStudentID(String stu_num, String pwd, String jw_school_id) {
+		// TODO Auto-generated method stub
+		HashMap<String,Object> result = new HashMap<String,Object>();
+		String cap = "";
+		
+		//HashMap<String,Object> search = new HashMap<String,Object>();
+		//search.put("tables", "s_school");
+		//search.put("fields", "jw_id");
+		//search.put("where", value);
+		
+		try {
+			//获取验证码
+			cap = StudentValidate.getCapture(jw_school_id, stu_num);
+			System.out.println(cap);
+			if(cap.equals("null"))
+				cap = "NO_CAPTCHA";
+			if(cap.equals("该学校不支持")){
+				result.put(Info.DATA, -1);//该学校不支持
+			}else if(cap.equals("访问不合法")){
+				result.put(Info.DATA, -2);//访问不合法
+			}else{
+				String code = "";
+				try {
+					code = StudentValidate.login(jw_school_id, stu_num, pwd, cap);
+					if(code.equals("0")){
+						result.put(Info.DATA, 1);
+					}else if(code.equals("10")){
+						result.put(Info.DATA, -1);
+					}else if(code.equals("1")){
+						result.put(Info.DATA, -3);//账号或密码错误
+					}else if(code.equals("11")){
+						result.put(Info.DATA, -4);//账号不存在
+					}else if(code.equals("101")){
+						result.put(Info.DATA, -5);//访问不合法
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					result.put(Info.DATA, 0);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result.put(Info.DATA, 0);
 		}
 		return result;
 	}

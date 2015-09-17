@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.lxh.smart.File;
-import org.lxh.smart.Files;
-import org.lxh.smart.SmartUpload;
-import org.lxh.smart.SmartUploadException;
+import com.jspsmart.upload.File;
+import com.jspsmart.upload.Files;
+import com.jspsmart.upload.SmartUpload;
+import com.jspsmart.upload.SmartUploadException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

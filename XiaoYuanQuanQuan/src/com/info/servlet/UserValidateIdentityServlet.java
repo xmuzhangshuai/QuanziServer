@@ -15,13 +15,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.info.basic.DataModelMapper;
-import com.info.post.PostServiceImpl;
+import com.info.huanxin.HuanXin;
+import com.info.model.UserModel;
 import com.info.sys.FastJsonTool;
 import com.info.sys.Info;
 import com.info.table.UserTable;
+import com.info.user.UserServiceImpl;
 
-@WebServlet(name="getQuanziPostServlet",urlPatterns="/post/getQuanziPost")
-public class PostGetQuanziPostServlet extends HttpServlet{
+@WebServlet(name="userValidateServlet",urlPatterns="/user/validateID")
+public class UserValidateIdentityServlet extends HttpServlet{
 	/**
 	 * 
 	 */
@@ -43,18 +45,17 @@ public class PostGetQuanziPostServlet extends HttpServlet{
 		ct = new ClassPathXmlApplicationContext(configFiles);
 		DataModelMapper dtMapper = (DataModelMapper) ct.getBean("DataModelMapper");
 		
-		PostServiceImpl pImpl = new PostServiceImpl(dtMapper);
+		UserServiceImpl uImpl = new UserServiceImpl(dtMapper);
 		
-		int pageNow = Integer.parseInt(request.getParameter("page"));
-		//int school_id = Integer.parseInt(request.getParameter(UserTable.U_SCHOOLID));
-		int userid = Integer.parseInt(request.getParameter(UserTable.U_ID));
+		String xuehao = request.getParameter("student_number");
+		String pwd = request.getParameter("student_pwd");
 		
-		if(pageNow < 0)
-			out.print(0);
-		else{
-			HashMap<String,Object> result = pImpl.getQuanziPosts(userid, pageNow);
-		 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
-		}		
+//获取学校代码
+		String school_id = request.getParameter(UserTable.U_SCHOOLID);
 		
+		HashMap<String,Object> result = uImpl.validatStudentID(xuehao, pwd, school_id);
+
+					
+	 	out.print(FastJsonTool.createJsonString(result.get(Info.DATA)));
 	}
 }

@@ -2,6 +2,7 @@ package com.info.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
@@ -15,10 +16,14 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
-import org.lxh.smart.File;
-import org.lxh.smart.Files;
-import org.lxh.smart.SmartUpload;
-import org.lxh.smart.SmartUploadException;
+//import org.lxh.smart.File;
+//import org.lxh.smart.Files;
+//import org.lxh.smart.SmartUpload;
+//import org.lxh.smart.SmartUploadException;
+import com.jspsmart.upload.File;
+import com.jspsmart.upload.Files;
+import com.jspsmart.upload.SmartUpload;
+import com.jspsmart.upload.SmartUploadException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -31,6 +36,11 @@ import com.info.sys.NarrowImage;
 import com.info.sys.PicContextUpload;
 import com.info.table.PostTable;
 import com.info.user.UserServiceImpl;
+
+
+import java.io.ByteArrayOutputStream;  
+import java.io.OutputStreamWriter;  
+import java.nio.charset.Charset;
 
 @WebServlet(name="addPostServlet",urlPatterns="/post/add")
 public class PostAddServlet extends HttpServlet{
@@ -48,6 +58,17 @@ public class PostAddServlet extends HttpServlet{
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charset=UTF-8");
+		/*******************************************************
+		 * ceshi
+		 */
+		System.out.println("Default Charset=" + Charset.defaultCharset());
+		System.out.println("file.encoding=" + System.getProperty("file.encoding"));
+		 OutputStreamWriter writer = new OutputStreamWriter(new ByteArrayOutputStream());  
+	        String enc = writer.getEncoding(); 
+	        System.out.println("Default Charset in Use=" + enc);  
+		/************************************************************8
+		 * 
+		 */
 		
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession(true);
@@ -89,8 +110,9 @@ public class PostAddServlet extends HttpServlet{
 			su.upload();
 			int ss = su.getFiles().getCount();
 			
-			n_content =Function.mysql_validate_string(su.getRequest().getParameter(PostTable.P_CONTENT)).trim();
-			//System.out.println("输入的内容为："+n_content);
+			n_content =Function.mysql_validate_string(new String(su.getRequest().getParameter(PostTable.P_CONTENT).getBytes(),"utf-8")).trim();
+			//n_content =Function.mysql_validate_string(new String(su.getRequest().getParameter(PostTable.P_CONTENT))).trim();
+			System.out.println("输入的内容为："+n_content+"  "+request.getParameter(PostTable.P_CONTENT));
 			//if(!n_content.equals("")){
 				userid = Integer.parseInt(su.getRequest().getParameter(PostTable.P_USERID));
 				

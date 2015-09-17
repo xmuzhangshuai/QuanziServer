@@ -10,7 +10,7 @@ import com.info.model.CommentModel;
 public interface PostService {
     public List<HashMap<String,Object>> getPosts(String condition);
     public HashMap<String,Object> getSchoolPosts(int school_id, int pageNow, int userid, HashMap<String,String> filter);
-    public HashMap<String,Object> getQuanziPosts(int userid);
+    public HashMap<String,Object> getQuanziPosts(int userid, int pageNow);
     public HashMap<String,Object> getFilteredPosts(int school_id, int userid, HashMap<String,String> filter, int pageNow);
     public HashMap<String,Object> getPostsContainComments(int school_id, int pageNow);
     

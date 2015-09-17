@@ -59,7 +59,7 @@ public class UserRegistServlet extends HttpServlet{
 				out.print(user.getU_id());
 			}
 		}else
-			out.print(-1);	 			
+			out.print(FastJsonTool.createJsonString(result.get(Info.DATA))); 			
 	 	//out.print(FastJsonTool.createJsonString(result));
 	}
 }

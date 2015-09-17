@@ -355,26 +355,38 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		HashMap<String,Object> insertOp = new HashMap<String,Object>();
 		HashMap<String,Object> incOp = new HashMap<String,Object>();
 		
-		String values = aa_act_id+","+aa_user_id
-				+",NOW(),"+aa_apply_userid;
-		insertOp.put("table", "aa_act_apply");
-		insertOp.put("fields", "aa_act_id,aa_user_id,aa_time,aa_apply_userid");
-		insertOp.put("values", values);
+		HashMap<String,Object> searchOp = new HashMap<String,Object>();//查询是否已经报名过
 		
-		incOp.put("table", "a_activity");
-		incOp.put("expression", "a_apply_amount=a_apply_amount+1");
-		incOp.put("where", "a_actid="+aa_act_id);
-		try{
-			this.getDtMapper().insertModelByValues(insertOp);
-			this.getDtMapper().updateModels(incOp);
-			result.put(Info.STATUS, Info.SUCCEED);
-			result.put(Info.DATA, 1);
-		}catch(Exception e){
-			e.printStackTrace();
-			result.put(Info.STATUS, Info.FAILED);
+		DataModelMapper dtMapper = this.getDtMapper();
+		
+		searchOp.put("tables", "aa_act_apply");
+		searchOp.put("fields", "aa_id");
+		searchOp.put("where", "aa_act_id=" + aa_act_id +" and aa_user_id=" + aa_user_id
+				+" and aa_apply_userid=" + aa_apply_userid);
+		
+		if(dtMapper.selectModels(searchOp).size()>0){
 			result.put(Info.DATA, -1);
-		}
-		
+		}else{
+			String values = aa_act_id+","+aa_user_id
+					+",NOW(),"+aa_apply_userid;
+			insertOp.put("table", "aa_act_apply");
+			insertOp.put("fields", "aa_act_id,aa_user_id,aa_time,aa_apply_userid");
+			insertOp.put("values", values);
+			
+			incOp.put("table", "a_activity");
+			incOp.put("expression", "a_apply_amount=a_apply_amount+1");
+			incOp.put("where", "a_actid="+aa_act_id);
+			try{
+				dtMapper.insertModelByValues(insertOp);
+				dtMapper.updateModels(incOp);
+				result.put(Info.STATUS, Info.SUCCEED);
+				result.put(Info.DATA, 1);
+			}catch(Exception e){
+				e.printStackTrace();
+				result.put(Info.STATUS, Info.FAILED);
+				result.put(Info.DATA, -1);
+			}
+		}	
 		return result;
 	}
 	
@@ -386,25 +398,37 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		HashMap<String,Object> delOp = new HashMap<String,Object>();
 		HashMap<String,Object> decOp = new HashMap<String,Object>();
 		
-		delOp.put("table", "aa_act_apply");
-		delOp.put("where", "aa_act_id=" + aa_act_id
-				+ " and aa_user_id=" + aa_user_id
-				+ " and aa_apply_userid=" + aa_apply_userid);
+		HashMap<String,Object> searchOp = new HashMap<String,Object>();//查询是否已经报名过
 		
-		decOp.put("table", "a_activity");
-		decOp.put("expression", "a_apply_amount=a_apply_amount-1");
-		decOp.put("where", "a_actid="+aa_act_id+" and a_userid="+aa_user_id);
-		try{
-			this.getDtMapper().deleteModel(delOp);
-			this.getDtMapper().updateModels(decOp);
-			result.put(Info.STATUS, Info.SUCCEED);
-			result.put(Info.DATA, 1);
-		}catch(Exception e){
-			e.printStackTrace();
-			result.put(Info.STATUS, Info.FAILED);
+		DataModelMapper dtMapper = this.getDtMapper();
+		
+		searchOp.put("tables", "aa_act_apply");
+		searchOp.put("fields", "aa_id");
+		searchOp.put("where", "aa_act_id=" + aa_act_id +" and aa_user_id=" + aa_user_id
+				+" and aa_apply_userid=" + aa_apply_userid);
+		
+		if(dtMapper.selectModels(searchOp).size()==0){
 			result.put(Info.DATA, -1);
+		}else{
+			delOp.put("table", "aa_act_apply");
+			delOp.put("where", "aa_act_id=" + aa_act_id
+					+ " and aa_user_id=" + aa_user_id
+					+ " and aa_apply_userid=" + aa_apply_userid);
+			
+			decOp.put("table", "a_activity");
+			decOp.put("expression", "a_apply_amount=a_apply_amount-1");
+			decOp.put("where", "a_actid="+aa_act_id+" and a_userid="+aa_user_id);
+			try{
+				dtMapper.deleteModel(delOp);
+				dtMapper.updateModels(decOp);
+				result.put(Info.STATUS, Info.SUCCEED);
+				result.put(Info.DATA, 1);
+			}catch(Exception e){
+				e.printStackTrace();
+				result.put(Info.STATUS, Info.FAILED);
+				result.put(Info.DATA, -1);
+			}
 		}
-		
 		return result;
 	}
 	@Override
@@ -462,7 +486,7 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 			update.put("table", "a_activity");
 			update.put("expression", "a_comment_count=a_comment_count+1");
 			update.put("where", "a_actid="+comment.getAc_actid()+
-					" and a_userid="+comment.getAc_comment_userid());
+					" and a_userid="+comment.getAc_userid());
 			dtMapper.updateModels(update);
 			
 			//插入消息
@@ -512,23 +536,16 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		// TODO Auto-generated method stub
 		HashMap<String,Object> select = new HashMap<String,Object>();
 		HashMap<String,Object> result= new HashMap<String,Object>();
-//		HashMap<String,Object> update = new HashMap<String,Object>();
 		
 		List<JsonUser> userList = new ArrayList<JsonUser>();
-		
-//		int from = pageNow * Info.NUM_PER_PAGE;
 				
 		select.put("tables", "aa_act_apply,u_user");
 		select.put("fields", "u_user.*");
-		select.put("where", "aa_act_id="+aa_actid+" and aa_apply_userid=u_id"
-				/*+ " limit " + from + "," + Info.NUM_PER_PAGE*/);
-		
-//		update.put("table", "a_activity");
-//		update.put("expression", "a_apply_amount=a_apply_amount+1");
-//		update.put("where", "a_actid=" + aa_actid + " and a_userid=" + aa_userid);
+		select.put("where", "aa_act_id=" + aa_actid + " and aa_user_id=" + aa_userid 
+				+ " and u_id=aa_apply_userid");
+
 		try{
 			userList = this.getDtMapper().getUserList(select);
-			//this.getDtMapper().updateModels(update);
 			result.put(Info.STATUS, Info.SUCCEED);
 			result.put(Info.DATA, userList);
 		}catch(Exception e){
@@ -687,13 +704,31 @@ public class ActivityServiceImpl extends Service implements ActivityService{
 		HashMap<String, Object> result = new HashMap<String,Object>();
 		HashMap<String, Object> delete = new HashMap<String,Object>();
 		
+		DataModelMapper dtMapper = this.getDtMapper();
+		
+		HashMap<String,Object> search = new HashMap<String, Object>();
+		search.put("tables", "ac_act_comment");
+		search.put("fields", "ac_act_id,ac_userid");
+		search.put("where", "ac_commentid=" + commentID);
+		
 		delete.put("table", "ac_act_comment");
 		delete.put("where", "ac_commentid="+commentID);
 		
+		HashMap<String,Object> act = dtMapper.selectModels(search).get(0);
+		HashMap<String,Object> update = new HashMap<String,Object>();
+		update.put("table", "a_activity");
+		update.put("expression", "a_comment_count=a_comment_count-1");
+		update.put("where", "a_actid="+act.get("ac_act_id")+
+				" and a_userid="+act.get("ac_userid"));
+		
 		try{
-			this.getDtMapper().deleteModel(delete);
+			dtMapper.deleteModel(delete);
+			
+			dtMapper.updateModels(update);
 			result.put(Info.DATA, 1);
 		}catch(Exception e){
+			e.printStackTrace();
+			
 			result.put(Info.DATA, -1);
 		}
 		return result;
